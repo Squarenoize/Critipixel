@@ -3,7 +3,7 @@ namespace App\Doctrine\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Tag;
+use App\Model\Entity\Tag;
 
 class TagFixtures extends Fixture
 {

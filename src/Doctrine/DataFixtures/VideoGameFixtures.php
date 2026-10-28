@@ -4,6 +4,7 @@ namespace App\Doctrine\DataFixtures;
 
 use App\Model\Entity\User;
 use App\Model\Entity\VideoGame;
+use App\Model\Entity\Tag;
 use App\Rating\CalculateAverageRating;
 use App\Rating\CountRatingsPerValue;
 use DateTimeImmutable;
@@ -25,6 +26,7 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
 
     public function load(ObjectManager $manager): void
     {
+        $tags = $manager->getRepository(Tag::class)->findAll();
         $users = $manager->getRepository(User::class)->findAll();
 
         $videoGames = array_fill_callback(0, 50, fn (int $index): VideoGame => (new VideoGame)
@@ -37,7 +39,16 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
             ->setImageSize(2_098_872)
         );
 
-        // TODO : Ajouter les tags aux vidéos
+        array_walk($videoGames, static function (VideoGame $videoGame) use ($tags) {
+            $numberOfTags = rand(1, 2);
+            $tagIndices = array_rand($tags, min($numberOfTags, count($tags)));
+            if (!is_array($tagIndices)) {
+                $tagIndices = [$tagIndices];
+            }
+            foreach ($tagIndices as $index) {
+                $videoGame->getTags()->add($tags[$index]);
+            }
+        });
 
         array_walk($videoGames, [$manager, 'persist']);
 

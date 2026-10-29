@@ -5,6 +5,7 @@ namespace App\Doctrine\DataFixtures;
 use App\Model\Entity\User;
 use App\Model\Entity\VideoGame;
 use App\Model\Entity\Tag;
+use App\Model\Entity\Review;
 use App\Rating\CalculateAverageRating;
 use App\Rating\CountRatingsPerValue;
 use DateTimeImmutable;
@@ -39,27 +40,62 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
             ->setImageSize(2_098_872)
         );
 
-        array_walk($videoGames, static function (VideoGame $videoGame) use ($tags) {
+        // Ajouter des tags aux vidéos
+
+        foreach ($videoGames as $videoGame) {
             $numberOfTags = rand(1, 2);
-            $tagIndices = array_rand($tags, min($numberOfTags, count($tags)));
+
+            $tagIndices = array_rand(
+                $tags,
+                min($numberOfTags, count($tags))
+            );
+
+            // S'assure que $tagIndices est toujours un tableau
             if (!is_array($tagIndices)) {
                 $tagIndices = [$tagIndices];
             }
+
             foreach ($tagIndices as $index) {
                 $videoGame->getTags()->add($tags[$index]);
             }
-        });
+        }
 
-        array_walk($videoGames, [$manager, 'persist']);
+        foreach ($videoGames as $videoGame) {
+            $manager->persist($videoGame);
+        }
 
         $manager->flush();
 
-        // TODO : Ajouter des reviews aux vidéos
+        // Ajouter des reviews aux vidéos
+
+        foreach ($videoGames as $videoGame) {
+            $randomUsersChoice = array_rand($users, rand(1, count($users)));
+            
+            // S'assure que $randomUsersChoice est toujours un tableau
+            if (!is_array($randomUsersChoice)) {
+                $randomUsersChoice = [$randomUsersChoice];
+            }
+            foreach ($randomUsersChoice as $index) {
+                $review = new Review();
+                $review->setUser($users[$index]);
+                $review->setVideoGame($videoGame);
+                $review->setRating(rand(1, 5));
+                $review->setComment($this->faker->paragraphs(1, true));
+
+                $videoGame->getReviews()->add($review);
+                $manager->persist($review);
+            }
+
+            $this->calculateAverageRating->calculateAverage($videoGame);
+            $this->countRatingsPerValue->countRatingsPerValue($videoGame);
+        }
+
+        $manager->flush();
 
     }
 
     public function getDependencies(): array
     {
-        return [UserFixtures::class];
+        return [UserFixtures::class, TagFixtures::class];
     }
 }

@@ -21,3 +21,15 @@ php.local.ini
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> Test Coverage & Reports ###
+/public/test-coverage/
+/coverage/
+*.coverage
+.phpunit.result.cache
+###< Test Coverage & Reports ###
+
+###> Xdebug ###
+xdebug.log
+*.cgrind
+###< Xdebug ###

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\VideoGame;
 
+use App\Model\Entity\User;
+use App\Model\Entity\VideoGame;
 use App\Tests\Functional\FunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,7 +24,19 @@ final class ShowTest extends FunctionalTestCase
         $this->login();
         
         //Accéder à la page du jeu vidéo avec le formulaire
-        $crawler = $this->get('/jeu-video-10');
+        // Les fixtures créent des reviews aléatoires : on choisit un jeu non encore noté par l'utilisateur
+        $em = $this->getEntityManager();
+        $user = $em->getRepository(User::class)->findOneByEmail('user+0@email.com');
+        $slug = null;
+        foreach ($em->getRepository(VideoGame::class)->findAll() as $videoGame) {
+            if (!$videoGame->hasAlreadyReview($user)) {
+                $slug = $videoGame->getSlug();
+                break;
+            }
+        }
+        self::assertNotNull($slug);
+
+        $crawler = $this->get('/' . $slug);
         self::assertResponseIsSuccessful();
         
         //Récupérer le formulaire de review et le soumettre

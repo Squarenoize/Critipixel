@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Rating\RatingHandler;
@@ -9,34 +9,39 @@ use PHPUnit\Framework\TestCase;
 
 final class CalculateAverageRatingTest extends TestCase
 {
-    public function testCalculateAverageRatingWithReviews(): void
+    /**
+     * @dataProvider provideAverageRatingTestCases
+     */
+    public function testCalculateAverageRating(array $ratings, int|null $expectedAverage, string $description): void
     {
-        // Cas pour 2 reviews
         $videoGame = new VideoGame();
-        $review1 = new Review();
-        $review1->setRating(4);
-        $review1->setVideoGame($videoGame);
-        $videoGame->getReviews()->add($review1);
-
-        $review2 = new Review();
-        $review2->setRating(5);
-        $review2->setVideoGame($videoGame);
-        $videoGame->getReviews()->add($review2);
+        
+        foreach ($ratings as $rating) {
+            $review = new Review();
+            $review->setRating($rating);
+            $review->setVideoGame($videoGame);
+            $videoGame->getReviews()->add($review);
+        }
 
         $ratingHandler = new RatingHandler();
         $ratingHandler->calculateAverage($videoGame);
 
-        $this->assertEquals(round(4.5), $videoGame->getAverageRating());
+        $this->assertEquals($expectedAverage, $videoGame->getAverageRating(), $description);
     }
 
-    public function testCalculateAverageRatingWithoutReviews(): void
+    public static function provideAverageRatingTestCases(): array
     {
-        // Cas pour aucun review
-        $videoGame = new VideoGame();
-        $ratingHandler = new RatingHandler();
-        $ratingHandler->calculateAverage($videoGame);
-
-        $this->assertEquals(null, $videoGame->getAverageRating());
-        
+        return [
+            'two reviews with ratings 4 and 5' => [
+                [4, 5],
+                5, // Expected: round(4.5) = 5
+                'Should calculate average of 4 and 5'
+            ],
+            'no reviews' => [
+                [],
+                null,
+                'Should return null when no reviews'
+            ],
+        ];
     }
 }

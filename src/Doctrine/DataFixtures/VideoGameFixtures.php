@@ -41,22 +41,35 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
         );
 
         // Ajouter des tags aux vidéos
+        foreach ($videoGames as $index => $videoGame) {
+            // Assure des tags prédictibles pour les premiers jeux vidéo (pour les tests)
+            if ($index === 0) {
+                // Le premier jeu a le tag "Action"
+                $videoGame->getTags()->add($tags[0]);
+            } elseif ($index === 1) {
+                // Le deuxième jeu a les tags "Action" et "Sport"
+                $videoGame->getTags()->add($tags[0]);
+                $videoGame->getTags()->add($tags[1]);
+            } elseif ($index === 2) {
+                // Le troisième jeu a le tag "Sport"
+                $videoGame->getTags()->add($tags[1]);
+            } else {
+                // Pour les autres jeux, utilisez le random comme avant
+                $numberOfTags = rand(1, 2);
 
-        foreach ($videoGames as $videoGame) {
-            $numberOfTags = rand(1, 2);
+                $tagIndices = array_rand(
+                    $tags,
+                    min($numberOfTags, count($tags))
+                );
 
-            $tagIndices = array_rand(
-                $tags,
-                min($numberOfTags, count($tags))
-            );
+                // S'assure que $tagIndices est toujours un tableau
+                if (!is_array($tagIndices)) {
+                    $tagIndices = [$tagIndices];
+                }
 
-            // S'assure que $tagIndices est toujours un tableau
-            if (!is_array($tagIndices)) {
-                $tagIndices = [$tagIndices];
-            }
-
-            foreach ($tagIndices as $index) {
-                $videoGame->getTags()->add($tags[$index]);
+                foreach ($tagIndices as $tagIndex) {
+                    $videoGame->getTags()->add($tags[$tagIndex]);
+                }
             }
         }
 

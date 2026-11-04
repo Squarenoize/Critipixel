@@ -78,14 +78,14 @@ class VideoGame
     private NumberOfRatingPerValue $numberOfRatingsPerValue;
 
     /**
-     * @var Collection<Tag>
+     * @var Collection<int,Tag>
      */
     #[ManyToMany(targetEntity: Tag::class)]
     #[JoinTable(name: 'video_game_tags')]
     private Collection $tags;
 
     /**
-     * @var Collection<Review>
+     * @var Collection<int,Review>
      */
     #[OneToMany(targetEntity: Review::class, mappedBy: 'videoGame')]
     private Collection $reviews;

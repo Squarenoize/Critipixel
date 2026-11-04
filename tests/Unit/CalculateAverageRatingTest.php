@@ -11,6 +11,7 @@ final class CalculateAverageRatingTest extends TestCase
 {
     /**
      * @dataProvider provideAverageRatingTestCases
+     * @param array<int, int> $ratings
      */
     public function testCalculateAverageRating(array $ratings, int|null $expectedAverage, string $description): void
     {

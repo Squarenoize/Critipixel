@@ -11,6 +11,8 @@ final class CalculateCountRatingTest extends TestCase
 {
     /**
      * @dataProvider provideCountRatingTestCases
+     * @param array<int, int> $ratings
+     * @param array<int, int> $expectedCounts
      */
     public function testCalculateCountRatingReviews(array $ratings, array $expectedCounts, string $description): void
     {
@@ -35,6 +37,8 @@ final class CalculateCountRatingTest extends TestCase
 
     /**
      * @dataProvider provideCountRatingTestCases
+     * @param array<int, int> $ratings
+     * @param array<int, int> $expectedCounts
      */
     public function testCalculateCountRatingWithoutReviews(array $ratings, array $expectedCounts, string $description): void
     {
@@ -57,6 +61,9 @@ final class CalculateCountRatingTest extends TestCase
         $this->assertEquals($expectedCounts[5], $ratings->getNumberOfFive());
     }
 
+    /**
+     * @return array<string, array{0: array<int, int>, 1: array<int, int>, 2: string}>
+     */
     public static function provideCountRatingTestCases(): array
     {
         return [

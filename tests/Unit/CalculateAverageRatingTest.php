@@ -30,6 +30,9 @@ final class CalculateAverageRatingTest extends TestCase
         $this->assertEquals($expectedAverage, $videoGame->getAverageRating(), $description);
     }
 
+    /**
+     * @return array<string, array{0: array<int, int>, 1: int|null, 2: string}>
+     */
     public static function provideAverageRatingTestCases(): array
     {
         return [

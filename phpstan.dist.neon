@@ -6,3 +6,10 @@ parameters:
         - public/
         - src/
         - tests/
+    ignoreErrors:
+        - identifier: property.unusedType
+          path: src/Model/Entity
+        - identifier: property.onlyRead
+          path: src/Model/Entity
+        - identifier: property.onlyWritten
+          path: src/Model/Entity/VideoGame.php

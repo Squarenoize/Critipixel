@@ -1,4 +1,6 @@
 {
+    "name": "squarenoize/critipixel",
+    "description": "Critipixel project - A Symfony-based video game exercise for tests and CI",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

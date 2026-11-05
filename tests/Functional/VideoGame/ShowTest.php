@@ -26,7 +26,7 @@ final class ShowTest extends FunctionalTestCase
         //Accéder à la page du jeu vidéo avec le formulaire
         // Les fixtures créent des reviews aléatoires : on choisit un jeu non encore noté par l'utilisateur
         $em = $this->getEntityManager();
-        $user = $em->getRepository(User::class)->findOneByEmail('user+0@email.com');
+        $user = $em->getRepository(User::class)->findOneBy(['email' => 'user+0@email.com']);
         $slug = null;
         foreach ($em->getRepository(VideoGame::class)->findAll() as $videoGame) {
             if (!$videoGame->hasAlreadyReview($user)) {

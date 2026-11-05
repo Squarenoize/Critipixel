@@ -26,7 +26,7 @@ abstract class FunctionalTestCase extends WebTestCase
     }
 
     /**
-     * @template T
+     * @template T of object
      * @param class-string<T> $id
      * @return T
      */
@@ -42,8 +42,11 @@ abstract class FunctionalTestCase extends WebTestCase
 
     protected function login(string $email = 'user+0@email.com'): void
     {
-        $user = $this->service(EntityManagerInterface::class)->getRepository(User::class)->findOneByEmail($email);
+        $user = $this->service(EntityManagerInterface::class)
+            ->getRepository(User::class)
+            ->findOneBy(['email' => $email]);
 
+        self::assertInstanceOf(User::class, $user);
         $this->client->loginUser($user);
     }
 

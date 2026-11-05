@@ -27,7 +27,9 @@ abstract class FunctionalTestCase extends WebTestCase
 
     /**
      * @template T of object
+     *
      * @param class-string<T> $id
+     *
      * @return T
      */
     protected function service(string $id): object
@@ -58,6 +60,6 @@ abstract class FunctionalTestCase extends WebTestCase
      */
     protected function submit(string $button, array $data = [], string $method = 'POST'): Crawler
     {
-        return $this->client->submitForm($button,$data, $method);
+        return $this->client->submitForm($button, $data, $method);
     }
 }

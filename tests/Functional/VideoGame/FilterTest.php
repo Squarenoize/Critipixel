@@ -32,15 +32,15 @@ final class FilterTest extends FunctionalTestCase
         $this->get('/');
         self::assertResponseIsSuccessful();
         self::assertSelectorCount(10, 'article.game-card');
-        
+
         // Récupère le formulaire de filtrage et extrait les IDs des tags disponibles
         $crawler = $this->client->getCrawler();
         $formNode = $crawler->selectButton('Filtrer');
         $form = $formNode->form();
-        
+
         // Récupère tous les checkboxes des tags
         $tagCheckboxes = $crawler->filter('input[name="filter[tags][]"]');
-        
+
         if ($tagCheckboxes->count() > 0) {
             // Utilise le premier tag disponible
             $firstTagId = $tagCheckboxes->first()->attr('value');
@@ -54,11 +54,11 @@ final class FilterTest extends FunctionalTestCase
         $this->get('/');
         self::assertResponseIsSuccessful();
         self::assertSelectorCount(10, 'article.game-card');
-        
+
         // Récupère le formulaire de filtrage et extrait les IDs des tags disponibles
         $crawler = $this->client->getCrawler();
         $tagCheckboxes = $crawler->filter('input[name="filter[tags][]"]');
-        
+
         if ($tagCheckboxes->count() >= 2) {
             // Utilise les deux premiers tags disponibles
             $firstTagId = $tagCheckboxes->eq(0)->attr('value');

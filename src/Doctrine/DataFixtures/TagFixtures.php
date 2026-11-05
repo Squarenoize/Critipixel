@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Doctrine\DataFixtures;
 
+use App\Model\Entity\Tag;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Model\Entity\Tag;
 
 class TagFixtures extends Fixture
 {

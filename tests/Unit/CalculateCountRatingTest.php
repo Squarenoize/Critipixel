@@ -2,15 +2,16 @@
 
 namespace App\Tests\Unit;
 
-use App\Rating\RatingHandler;
-use App\Model\Entity\VideoGame;
 use App\Model\Entity\Review;
+use App\Model\Entity\VideoGame;
+use App\Rating\RatingHandler;
 use PHPUnit\Framework\TestCase;
 
 final class CalculateCountRatingTest extends TestCase
 {
     /**
      * @dataProvider provideCountRatingTestCases
+     *
      * @param array<int, int> $ratings
      * @param array<int, int> $expectedCounts
      */
@@ -37,6 +38,7 @@ final class CalculateCountRatingTest extends TestCase
 
     /**
      * @dataProvider provideCountRatingTestCases
+     *
      * @param array<int, int> $ratings
      * @param array<int, int> $expectedCounts
      */
@@ -70,12 +72,12 @@ final class CalculateCountRatingTest extends TestCase
             'two reviews with ratings 4 and 5' => [
                 [4, 5],
                 [1 => 0, 2 => 0, 3 => 0, 4 => 1, 5 => 1],
-                'Should count ratings correctly for 4 and 5'
+                'Should count ratings correctly for 4 and 5',
             ],
             'no reviews' => [
                 [],
                 [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0],
-                'Should return zero counts when no reviews'
+                'Should return zero counts when no reviews',
             ],
         ];
     }

@@ -2,26 +2,23 @@
 
 namespace App\Doctrine\DataFixtures;
 
+use App\Model\Entity\Review;
+use App\Model\Entity\Tag;
 use App\Model\Entity\User;
 use App\Model\Entity\VideoGame;
-use App\Model\Entity\Tag;
-use App\Model\Entity\Review;
 use App\Rating\CalculateAverageRating;
 use App\Rating\CountRatingsPerValue;
-use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Generator;
-
-use function array_fill_callback;
 
 final class VideoGameFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private readonly Generator $faker,
         private readonly CalculateAverageRating $calculateAverageRating,
-        private readonly CountRatingsPerValue $countRatingsPerValue
+        private readonly CountRatingsPerValue $countRatingsPerValue,
     ) {
     }
 
@@ -35,7 +32,7 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
             fn (int $index): VideoGame => (new VideoGame())
                 ->setTitle(sprintf('Jeu vidéo %d', $index))
                 ->setDescription($this->faker->paragraphs(10, true))
-                ->setReleaseDate(new DateTimeImmutable())
+                ->setReleaseDate(new \DateTimeImmutable())
                 ->setTest($this->faker->paragraphs(6, true))
                 ->setRating(($index % 5) + 1)
                 ->setImageName(sprintf('video_game_%d.png', $index))
@@ -46,14 +43,14 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
         // Ajouter des tags aux vidéos
         foreach ($videoGames as $index => $videoGame) {
             // Assure des tags prédictibles pour les premiers jeux vidéo (pour les tests)
-            if ($index === 0) {
+            if (0 === $index) {
                 // Le premier jeu a le tag "Action"
                 $videoGame->getTags()->add($tags[0]);
-            } elseif ($index === 1) {
+            } elseif (1 === $index) {
                 // Le deuxième jeu a les tags "Action" et "Sport"
                 $videoGame->getTags()->add($tags[0]);
                 $videoGame->getTags()->add($tags[1]);
-            } elseif ($index === 2) {
+            } elseif (2 === $index) {
                 // Le troisième jeu a le tag "Sport"
                 $videoGame->getTags()->add($tags[1]);
             } else {
@@ -86,7 +83,7 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
 
         foreach ($videoGames as $videoGame) {
             $randomUsersChoice = array_rand($users, rand(1, count($users)));
-            
+
             // S'assure que $randomUsersChoice est toujours un tableau
             if (!is_array($randomUsersChoice)) {
                 $randomUsersChoice = [$randomUsersChoice];
@@ -107,7 +104,6 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
         }
 
         $manager->flush();
-
     }
 
     public function getDependencies(): array

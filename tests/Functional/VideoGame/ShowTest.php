@@ -20,10 +20,10 @@ final class ShowTest extends FunctionalTestCase
 
     public function testUserPostedReview(): void
     {
-        //Créer le client
+        // Créer le client
         $this->login();
-        
-        //Accéder à la page du jeu vidéo avec le formulaire
+
+        // Accéder à la page du jeu vidéo avec le formulaire
         // Les fixtures créent des reviews aléatoires : on choisit un jeu non encore noté par l'utilisateur
         $em = $this->getEntityManager();
         $user = $em->getRepository(User::class)->findOneBy(['email' => 'user+0@email.com']);
@@ -36,28 +36,28 @@ final class ShowTest extends FunctionalTestCase
         }
         self::assertNotNull($slug);
 
-        $crawler = $this->get('/' . $slug);
+        $crawler = $this->get('/'.$slug);
         self::assertResponseIsSuccessful();
-        
-        //Récupérer le formulaire de review et le soumettre
+
+        // Récupérer le formulaire de review et le soumettre
         $buttons = $crawler->selectButton('Poster');
         self::assertCount(1, $buttons);
-        
+
         $form = $buttons->form();
         $form['review[rating]']->setValue('5');
         $form['review[comment]']->setValue('Super jeu !');
         $this->client->submit($form);
-       
-        //Vérifier le statut HTTP de la réponse après soumission du formulaire
+
+        // Vérifier le statut HTTP de la réponse après soumission du formulaire
         self::assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        //Vérifier que la review est affichée sur la page (redirection vers la page du jeu vidéo)
+        // Vérifier que la review est affichée sur la page (redirection vers la page du jeu vidéo)
         $this->client->followRedirect();
         self::assertSelectorTextContains('div.list-group-item:last-child h3', 'user+0');
         self::assertSelectorTextContains('div.list-group-item:last-child p', 'Super jeu !');
         self::assertSelectorTextContains('div.list-group-item:last-child span.value', '5');
 
-        //Vérifier que le formulaire n'est plus présent après la soumission
+        // Vérifier que le formulaire n'est plus présent après la soumission
         $buttons = $this->client->getCrawler()->selectButton('Poster');
         self::assertCount(0, $buttons);
     }

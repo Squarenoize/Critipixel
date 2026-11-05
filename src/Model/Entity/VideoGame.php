@@ -216,7 +216,7 @@ class VideoGame
     }
 
     /**
-     * @return Collection<Tag>
+     * @return Collection<int, Tag>
      */
     public function getTags(): Collection
     {
@@ -224,7 +224,7 @@ class VideoGame
     }
 
     /**
-     * @return Collection<Review>
+     * @return Collection<int, Review>
      */
     public function getReviews(): Collection
     {

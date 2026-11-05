@@ -74,3 +74,6 @@ jobs:
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress

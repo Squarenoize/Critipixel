@@ -25,7 +25,7 @@ docker compose up -d
 ## Configuration
 
 ### Base de données
-Actuellement, le fichier `.env` est configuré pour la base de données PostgreSQL mise en place dans `docker-compose.yml`.
+Actuellement, le fichier `.env` est configuré pour la base de données MySQL 8.0 mise en place dans `docker-compose.yml`.
 Cependant, vous pouvez créer un fichier `.env.local` si nécessaire pour configurer l'accès à la base de données.
 Exemple :
 ```dotenv

@@ -1,14 +1,19 @@
-version: '3'
 services:
-  postgres:
-    image: postgres:16-alpine
+  mysql:
+    image: mysql:8.0.32
+    restart: unless-stopped
     ports:
-      - 5432:5432
+      - "3306:3306"
     volumes:
-      - postgres_db:/var/lib/postgresql/data
+      - mysql_db:/var/lib/mysql
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
+      MYSQL_ROOT_PASSWORD: sirius
+      MYSQL_DATABASE: criti-pixel
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-psirius"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 volumes:
-  postgres_db:
-    driver: local
+  mysql_db:

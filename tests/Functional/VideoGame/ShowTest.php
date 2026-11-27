@@ -38,6 +38,9 @@ final class ShowTest extends FunctionalTestCase
 
         $crawler = $this->get('/'.$slug);
         self::assertResponseIsSuccessful();
+        $videoGame = $em->getRepository(VideoGame::class)->findOneBy(['slug' => $slug]);
+        self::assertNotNull($videoGame);
+        $numberOfFiveBefore = $videoGame->getNumberOfRatingsPerValue()->getNumberOfFive();
 
         // Récupérer le formulaire de review et le soumettre
         $buttons = $crawler->selectButton('Poster');
@@ -56,6 +59,14 @@ final class ShowTest extends FunctionalTestCase
         self::assertSelectorTextContains('div.list-group-item:last-child h3', 'user+0');
         self::assertSelectorTextContains('div.list-group-item:last-child p', 'Super jeu !');
         self::assertSelectorTextContains('div.list-group-item:last-child span.value', '5');
+        $updatedVideoGame = $this->getEntityManager()
+            ->getRepository(VideoGame::class)
+            ->findOneBy(['slug' => $slug]);
+        self::assertNotNull($updatedVideoGame);
+        self::assertSame(
+            $numberOfFiveBefore + 1,
+            $updatedVideoGame->getNumberOfRatingsPerValue()->getNumberOfFive()
+        );
 
         // Vérifier que le formulaire n'est plus présent après la soumission
         $buttons = $this->client->getCrawler()->selectButton('Poster');

@@ -91,11 +91,10 @@ final class VideoGameFixtures extends Fixture implements DependentFixtureInterfa
             foreach ($randomUsersChoice as $index) {
                 $review = new Review();
                 $review->setUser($users[$index]);
-                $review->setVideoGame($videoGame);
                 $review->setRating(rand(1, 5));
                 $review->setComment($this->faker->paragraphs(1, true));
 
-                $videoGame->getReviews()->add($review);
+                $videoGame->addReview($review);
                 $manager->persist($review);
             }
 

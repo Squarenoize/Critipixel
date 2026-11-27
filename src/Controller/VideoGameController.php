@@ -21,7 +21,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/', name: 'video_games_')]
 final class VideoGameController extends AbstractController
 {
-    public function __construct(private readonly RatingHandler $ratingHandler) {}
+    public function __construct(private readonly RatingHandler $ratingHandler)
+    {
+    }
+
     #[Route(name: 'list', methods: [Request::METHOD_GET])]
     public function list(
         #[ValueResolver('pagination')]
@@ -43,21 +46,23 @@ final class VideoGameController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->denyAccessUnlessGranted('review', $videoGame);
-            $review->setVideoGame($videoGame);
+            $videoGame->addReview($review);
             $user = $this->getUser();
             if (!$user instanceof User) {
                 throw $this->createAccessDeniedException();
             }
             $review->setUser($user);
-            $entityManager->persist($review);
-            $entityManager->flush();
 
             $this->ratingHandler->calculateAverage($videoGame);
             $this->ratingHandler->countRatingsPerValue($videoGame);
+            $entityManager->persist($review);
             $entityManager->flush();
 
             return $this->redirectToRoute('video_games_show', ['slug' => $videoGame->getSlug()]);
         }
+
+        $this->ratingHandler->calculateAverage($videoGame);
+        $this->ratingHandler->countRatingsPerValue($videoGame);
 
         return $this->render('views/video_games/show.html.twig', ['video_game' => $videoGame, 'form' => $form]);
     }

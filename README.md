@@ -22,6 +22,12 @@ Si vous souhaitez utiliser Docker Compose, il vous suffit de lancer la commande 
 docker compose up -d
 ```
 
+Le service PHP inclut Composer. Les commandes Symfony peuvent être exécutées avec, par exemple :
+```bash
+docker compose exec php composer install
+docker compose exec php php bin/console doctrine:migrations:migrate -n
+```
+
 ## Configuration
 
 ### Base de données

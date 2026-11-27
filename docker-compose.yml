@@ -1,4 +1,17 @@
 services:
+  php:
+    build:
+      context: .
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: "mysql://root:sirius@mysql:3306/criti-pixel?serverVersion=8.0.32&charset=utf8mb4"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: ["tail", "-f", "/dev/null"]
+
   mysql:
     image: mysql:8.0.32
     restart: unless-stopped

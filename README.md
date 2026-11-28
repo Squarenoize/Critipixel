@@ -3,45 +3,83 @@
 # CritiPixel
 
 ## Pré-requis
+
+Pour une installation locale :
 * PHP >= 8.2
 * Composer
 * Extension PHP Xdebug
-* Symfony (binaire)
 
 ## Installation
 
-### Composer
+
 Dans un premier temps, installer les dépendances :
 ```bash
 composer install
 ```
 
 ### Docker (optionnel)
-Si vous souhaitez utiliser Docker Compose, il vous suffit de lancer la commande suivante :
-```bash
-docker compose up -d
+
+Depuis la racine du projet, créez le fichier de variables Docker à partir de l'exemple.
+
+Sous Windows avec PowerShell :
+```powershell
+Copy-Item .env.docker.example .env.docker
 ```
 
-Le service PHP inclut Composer. Les commandes Symfony peuvent être exécutées avec, par exemple :
+Sous Linux ou macOS :
 ```bash
-docker compose exec php composer install
-docker compose exec php php bin/console doctrine:migrations:migrate -n
+cp .env.docker.example .env.docker
 ```
+
+Modifiez `MYSQL_ROOT_PASSWORD` dans `.env.docker`, puis construisez et démarrez les conteneurs :
+```bash
+docker compose --env-file .env.docker up -d --build
+```
+
+Installez les dépendances, compilez les assets et initialisez la base de l'application :
+```bash
+docker compose --env-file .env.docker exec php composer install
+docker compose --env-file .env.docker exec php composer build-assets
+docker compose --env-file .env.docker exec php composer db
+```
+
+La compilation des assets produit des fichiers statiques dans `public/assets`, ce qui évite à Symfony de compiler les ressources à chaque chargement. Après chaque modification Sass, relancez `composer build-assets`.
+
+L'application est disponible sur http://localhost:8000.
+
+La base MySQL principale est persistée dans le volume Docker. Pour exécuter tous les tests, lancez :
+```bash
+docker compose --env-file .env.docker exec php composer test
+```
+
+Cette commande recrée la base de test séparée, applique les migrations, recharge les fixtures puis lance PHPUnit. Les données affichées par l'application ne sont pas modifiées.
+
+Pour consulter les journaux du service PHP :
+```bash
+docker compose --env-file .env.docker logs php
+```
+
+Pour arrêter les services tout en conservant les données :
+```bash
+docker compose --env-file .env.docker down
+```
+
+Pour repartir d'un état vide, supprimez les volumes MySQL, Composer et cache Symfony, puis recommencez toute la procédure depuis `composer install` :
+```bash
+docker compose --env-file .env.docker down -v
+```
+
+
 
 ## Configuration
 
 ### Base de données
-Actuellement, le fichier `.env` est configuré pour la base de données MySQL 8.0 mise en place dans `docker-compose.yml`.
-Cependant, vous pouvez créer un fichier `.env.local` si nécessaire pour configurer l'accès à la base de données.
+Le fichier `.env` contient les paramètres par défaut de l'installation locale. Vous pouvez créer un fichier `.env.local` pour les adapter.
+
 Exemple :
 ```dotenv
 DATABASE_URL=mysql://root:Password123!@host:3306/criti-pixel
 ```
-
-### PHP (optionnel)
-Vous pouvez surcharger la configuration PHP en créant un fichier `php.local.ini`.
-
-De même pour la version de PHP que vous pouvez spécifier dans un fichier `.php-version`.
 
 ## Usage
 
@@ -73,16 +111,16 @@ symfony console doctrine:fixtures:load -n --purge-with-truncate
 
 #### Compiler les fichiers SASS
 ```bash
-symfony console sass:build
+composer build-assets
 ```
-*Note : le fichier `.symfony.local.yaml` est configuré pour surveiller les fichiers SASS et les compiler automatiquement quand vous lancez le serveur web de Symfony.*
+*Note : le fichier `.symfony.local.yaml` peut surveiller les fichiers Sass avec le serveur local Symfony. Avec Docker, utilisez `composer build-assets` après chaque modification des styles.*
 
 ### Tests
 ```bash
-symfony php bin/phpunit
+composer test
 ```
 
-*Note : Penser à charger les fixtures avant chaque éxécution des tests.*
+Cette commande prépare automatiquement la base de test et ses fixtures avant d'exécuter PHPUnit.
 
 ### Serveur web
 ```bash

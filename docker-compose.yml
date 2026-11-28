@@ -5,12 +5,17 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      - php_vendor:/app/vendor
+      - php_var:/app/var
     environment:
-      DATABASE_URL: "mysql://root:sirius@mysql:3306/criti-pixel?serverVersion=8.0.32&charset=utf8mb4"
+      DATABASE_URL: "mysql://root:${MYSQL_ROOT_PASSWORD:?}@mysql:3306/${MYSQL_DATABASE:?}?serverVersion=8.0.32&charset=utf8mb4"
+      PHP_CLI_SERVER_WORKERS: "4"
     depends_on:
       mysql:
         condition: service_healthy
-    command: ["tail", "-f", "/dev/null"]
+    ports:
+      - "8000:8000"
+    command: ["php", "-S", "0.0.0.0:8000", "-t", "public", "docker/router.php"]
 
   mysql:
     image: mysql:8.0.32
@@ -20,13 +25,15 @@ services:
     volumes:
       - mysql_db:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: sirius
-      MYSQL_DATABASE: criti-pixel
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-psirius"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
   mysql_db:
+  php_vendor:
+  php_var:
